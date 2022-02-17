@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
   import { SvelteToast, toast } from '@zerodevx/svelte-toast';
   import { formatYmd, formatDayOfWeek, formatISO } from './date';
 
@@ -33,6 +34,8 @@
   }
 
   let holidays = new Set();
+
+  let showHelp = false;
 
   onMount(() => {
     if (location.hash) {
@@ -98,10 +101,34 @@
   </table>
 </main>
 
+<button class="help" title="ヘルプを表示する" on:click={() => (showHelp = !showHelp)}>?</button>
+
+{#if showHelp}
+  <nav transition:fade>
+    <h1>使い方</h1>
+    <ol>
+      <li>表の1行目の日付をクリックして起算日を設定します</li>
+      <li>表の各行にある自由記入欄に自由にメモを書きます</li>
+      <li>画面一番上のタイトル部分をクリックしてタイトルを書きます</li>
+      <li>このページのURLをコピペして共有すると相手も同じカレンダーを見ることができます</li>
+    </ol>
+    <h1>仕組み</h1>
+    <p>
+      日付やメモ、タイトルのデータはあなたのパソコンやオンラインのサーバー上に保存されるの<strong>ではなく</strong
+      >、URLの一部に暗号のような形で埋め込まれています。従って、もしカレンダーに変更を加えると、URLは変化してしまうため、再度相手にURLを共有してあげる必要があります。
+    </p>
+    <p>祝日のデータは<a href="https://holidays-jp.github.io/">Holidays JP API</a>から取得しています。</p>
+    <p class="right"><a href="https://twitter.com/p_km">私が作りました <img src="me.svg" alt="私" /></a></p>
+    <p><a href="https://github.com/kissge/kijitsu">source (GitHub)</a></p>
+    <button on:click={() => (showHelp = !showHelp)}>とじる</button>
+  </nav>
+{/if}
+
 <SvelteToast />
 
 <style>
   main {
+    padding-bottom: 3rem;
     text-align: center;
   }
 
@@ -159,5 +186,34 @@
     width: 20em;
     border: none;
     background-color: transparent;
+  }
+
+  button.help {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+  }
+
+  nav {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    padding: 2em;
+    min-width: 320px;
+    background: #fcfdfd;
+    box-shadow: 0 0 3px #00000044;
+    transform: translate(-50%, -50%);
+  }
+
+  nav .right {
+    float: right;
+    font-size: 0.5em;
+  }
+
+  nav img {
+    width: 4em;
   }
 </style>

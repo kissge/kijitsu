@@ -23,7 +23,7 @@
   $: state = {
     title: encodeURIComponent(title),
     originDate: formatISO(originDate),
-    notes: Object.fromEntries(notes.flatMap((n, i) => (n ? [[i, encodeURIComponent(n)]] : []))),
+    notes: Object.fromEntries(notes.flatMap((n, i) => (n.trim() ? [[i, encodeURIComponent(n.trim())]] : []))),
   };
 
   let mounted = false;
@@ -39,10 +39,13 @@
         const restoredState: typeof state = JSON.parse(atob(location.hash.slice(1)));
         title = decodeURIComponent(restoredState.title);
         originDate = new Date(restoredState.originDate);
-        notes = Object.entries(restoredState.notes).reduce((acc, [i, n]) => {
-          acc[Number.parseInt(i)] = decodeURIComponent(n);
-          return acc;
-        }, []);
+        notes = Object.entries(restoredState.notes).reduce(
+          (acc, [i, n]) => {
+            acc[Number.parseInt(i)] = decodeURIComponent(n);
+            return acc;
+          },
+          Array.from({ length: 52 }, () => ''),
+        );
       } catch (e) {
         console.error(e);
       }
@@ -68,7 +71,7 @@
       {#each days as day, i}
         <tr
           class:weekend={day.isWeekend}
-          class:with-notes={notes[i]}
+          class:with-notes={notes[i].trim()}
           class:today={day.isToday}
           class:holiday={day.isHoliday}
         >
@@ -96,16 +99,16 @@
   }
 
   .title {
-    font-size: 2rem;
-    border: none;
     width: calc(100% - 200px);
+    border: none;
     text-align: center;
+    font-size: 2rem;
   }
 
   table {
-    border-collapse: collapse;
-    border-spacing: 0;
     margin: auto;
+    border-spacing: 0;
+    border-collapse: collapse;
   }
 
   .with-notes {
@@ -139,15 +142,15 @@
 
   tr:first-of-type td:nth-of-type(3) input {
     margin: 0;
-    border: none;
     width: 100%;
+    border: none;
     background-color: transparent;
   }
 
   td:first-of-type input {
     margin: 0;
+    width: 20em;
     border: none;
     background-color: transparent;
-    width: 20em;
   }
 </style>

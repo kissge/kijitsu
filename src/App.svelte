@@ -189,6 +189,11 @@
     background-color: transparent;
   }
 
+  td:first-of-type input::placeholder {
+    color: #ddd;
+    opacity: 1;
+  }
+
   button.help,
   button.clear {
     position: absolute;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { SvelteToast, toast } from '@zerodevx/svelte-toast';
   import { formatYmd, formatDayOfWeek, formatISO } from './date';
 
   let title = '';
@@ -47,6 +48,7 @@
           Array.from({ length: 52 }, () => ''),
         );
       } catch (e) {
+        toast.push('URLに問題があるためデータを読み込めませんでした');
         console.error(e);
       }
     }
@@ -54,7 +56,10 @@
     fetch('https://holidays-jp.github.io/api/v1/date.json')
       .then((res) => res.json())
       .then((res) => (holidays = new Set(Object.keys(res))))
-      .catch((e) => console.error(e));
+      .catch((e) => {
+        toast.push('祝日のデータを読み込めませんでした');
+        console.error(e);
+      });
 
     mounted = true;
   });
@@ -92,6 +97,8 @@
     </tbody>
   </table>
 </main>
+
+<SvelteToast />
 
 <style>
   main {

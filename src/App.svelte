@@ -102,6 +102,7 @@
 </main>
 
 <button class="help" title="ヘルプを表示する" on:click={() => (showHelp = !showHelp)}>?</button>
+<button class="clear" title="全部消す" on:click={() => ((location.hash = ''), location.reload())}>×</button>
 
 {#if showHelp}
   <nav transition:fade>
@@ -188,13 +189,21 @@
     background-color: transparent;
   }
 
-  button.help {
+  button.help,
+  button.clear {
     position: absolute;
-    top: 20px;
     right: 20px;
     width: 30px;
     height: 30px;
     border-radius: 30px;
+  }
+
+  button.help {
+    top: 20px;
+  }
+
+  button.clear {
+    top: 60px;
   }
 
   nav {

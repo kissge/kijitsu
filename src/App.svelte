@@ -4,11 +4,13 @@
   import { SvelteToast, toast } from '@zerodevx/svelte-toast';
   import { formatYmd, formatDayOfWeek, formatISO } from './date';
 
+  const N = 53;
+
   let title = '';
 
   let originDate = new Date();
   const today = formatISO(new Date());
-  $: days = Array.from({ length: 52 }, (_, i) => {
+  $: days = Array.from({ length: N }, (_, i) => {
     const day = new Date(originDate.getTime() + i * 24 * 60 * 60 * 1000);
     const iso = formatISO(day);
     return {
@@ -20,7 +22,7 @@
     };
   });
 
-  let notes = Array.from({ length: 52 }, () => '');
+  let notes = Array.from({ length: N }, () => '');
 
   $: state = {
     title: encodeURIComponent(title),
@@ -48,7 +50,7 @@
             acc[Number.parseInt(i)] = decodeURIComponent(n);
             return acc;
           },
-          Array.from({ length: 52 }, () => ''),
+          Array.from({ length: N }, () => ''),
         );
       } catch (e) {
         toast.push('URLに問題があるためデータを読み込めませんでした');

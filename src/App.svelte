@@ -198,7 +198,7 @@
 
   button.help,
   button.clear {
-    position: absolute;
+    position: fixed;
     right: 20px;
     width: 30px;
     height: 30px;

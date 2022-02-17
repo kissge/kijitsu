@@ -6,6 +6,7 @@
 
   let originDate = new Date();
   $: days = Array.from({ length: 52 }, (_, i) => new Date(originDate.getTime() + i * 24 * 60 * 60 * 1000));
+  const today = formatISO(new Date());
 
   let notes = Array.from({ length: 52 }, () => '');
 
@@ -48,7 +49,7 @@
   <table>
     <tbody>
       {#each days as day, i}
-        <tr class:weekend={day.getDay() % 6 === 0} class:with-notes={notes[i]}>
+        <tr class:weekend={day.getDay() % 6 === 0} class:with-notes={notes[i]} class:today={formatISO(day) === today}>
           <td>
             <input placeholder="自由記入欄" bind:value={notes[i]} />
           </td>
@@ -93,6 +94,10 @@
     background-color: #ffd;
   }
 
+  .today {
+    border: 3px solid #5b1919;
+  }
+
   td {
     border: 1px solid #ccc;
   }
@@ -110,6 +115,7 @@
     margin: 0;
     border: none;
     width: 100%;
+    background-color: transparent;
   }
 
   td:first-of-type input {

@@ -5,8 +5,18 @@
   let title = '';
 
   let originDate = new Date();
-  $: days = Array.from({ length: 52 }, (_, i) => new Date(originDate.getTime() + i * 24 * 60 * 60 * 1000));
   const today = formatISO(new Date());
+  $: days = Array.from({ length: 52 }, (_, i) => {
+    const day = new Date(originDate.getTime() + i * 24 * 60 * 60 * 1000);
+    const iso = formatISO(day);
+    return {
+      isWeekend: day.getDay() % 6 === 0,
+      isToday: iso === today,
+      isHoliday: holidays.has(iso),
+      ymd: formatYmd(day),
+      dayOfWeek: formatDayOfWeek(day),
+    };
+  });
 
   let notes = Array.from({ length: 52 }, () => '');
 
@@ -20,6 +30,8 @@
   $: if (mounted) {
     location.hash = btoa(JSON.stringify(state));
   }
+
+  let holidays = new Set();
 
   onMount(() => {
     if (location.hash) {
@@ -36,6 +48,11 @@
       }
     }
 
+    fetch('https://holidays-jp.github.io/api/v1/date.json')
+      .then((res) => res.json())
+      .then((res) => (holidays = new Set(Object.keys(res))))
+      .catch((e) => console.error(e));
+
     mounted = true;
   });
 
@@ -49,7 +66,12 @@
   <table>
     <tbody>
       {#each days as day, i}
-        <tr class:weekend={day.getDay() % 6 === 0} class:with-notes={notes[i]} class:today={formatISO(day) === today}>
+        <tr
+          class:weekend={day.isWeekend}
+          class:with-notes={notes[i]}
+          class:today={day.isToday}
+          class:holiday={day.isHoliday}
+        >
           <td>
             <input placeholder="自由記入欄" bind:value={notes[i]} />
           </td>
@@ -58,10 +80,10 @@
             {#if i === 0}
               <input type="date" value={formatISO(originDate)} on:input={onInputOriginDate} />
             {:else}
-              {formatYmd(day)}
+              {day.ymd}
             {/if}
           </td>
-          <td>{formatDayOfWeek(day)}</td>
+          <td>{day.isHoliday ? '祝' : day.dayOfWeek}</td>
         </tr>
       {/each}
     </tbody>
@@ -96,6 +118,10 @@
 
   .today {
     border: 3px solid #5b1919;
+  }
+
+  .holiday {
+    background-color: #fce;
   }
 
   td {
